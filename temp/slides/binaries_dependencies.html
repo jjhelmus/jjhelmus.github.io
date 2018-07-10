@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Binaries and Dependencies &mdash; The Joy of Packaging 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="The Joy of Packaging 0.1 documentation" href="index.html" />
+    <link rel="next" title="Conda Packages" href="conda.html" />
+    <link rel="prev" title="Building and Uploading to PyPi" href="uploading_pypi.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="binaries-and-dependencies">
+
+<h1>Binaries and Dependencies</h1>
+
+
+
+
+
+</article>
+<article class="slide level-2" id="learning-objectives">
+
+<h2>Learning Objectives</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="in-this-section-we-will">
+
+<h3>In this section we will …</h3>
+
+<ul class="simple">
+<li>Understand why we build Python packages with native binaries: 1)
+<strong>performance</strong> and 2) <strong>library integration</strong></li>
+<li>Understand different components of the binary build process and their role:
+<em>headers, libraries, compilers, linkers, build systems, system introspection
+tools, package managers</em></li>
+<li>Understand basic requirements for binary compatibility: a) <strong>C-runtime library
+compatibility</strong> and b) <strong>shared library compatibilty</strong></li>
+<li>Understand <strong>scikit-build</strong>’s role in coordinating components of the binary
+build process and <strong>conda</strong>’s role in resolving dependencies and creating compatible platform binaries</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-2" id="tutorial">
+
+<h2>Tutorial</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="motivation">
+
+<h3>Motivation</h3>
+
+<p>Scientific computing applications demand <strong>higher performance</strong> than other
+domains because of the:</p>
+<ol class="arabic simple">
+<li><strong>Size</strong> of the <strong>datasets</strong> to be analyzed</li>
+<li><strong>Complexity</strong> of the <strong>algorithms</strong> evaluated</li>
+</ol>
+
+
+
+
+</article>
+<article class="slide level-3" id="id1">
+
+<h3>Motivation</h3>
+
+<p>In order to achieve <strong>high performance</strong>, programs can:</p>
+<ol class="arabic simple">
+<li><strong>Minimized the number of operations</strong> on the CPU required to acheive a certain
+task</li>
+<li><strong>Execute in parallel</strong> to leverage multi-core, many-core, and GPGPU system
+architectures</li>
+<li>Carefully and precisely <strong>manage memory</strong> allocation and use</li>
+</ol>
+
+
+
+
+</article>
+<article class="slide level-3" id="id2">
+
+<h3>Motivation</h3>
+
+<p>Greater performance is achieved with native binaries over CPython because:</p>
+<ol class="arabic simple">
+<li>Tasks are <strong>compiled down to minimal processor operations</strong>,
+as opposed to high level programming language instructions that must be
+<strong>interpreted</strong></li>
+<li>Parallel computing is not impared by CPython’s <a class="reference external" href="https://wiki.python.org/moin/GlobalInterpreterLock">Global Interpreter Lock
+(GIL)</a></li>
+<li><strong>Memory</strong> can be managed <strong>explicitly</strong> and <strong>deterministically</strong></li>
+</ol>
+
+
+
+
+</article>
+<article class="slide level-3" id="id3">
+
+<h3>Motivation</h3>
+
+<p>Many existing scientific codes are written in <strong>programming languages other than Python</strong>.
+It is necessary to <strong>re-use</strong> these libraries since:</p>
+<ul class="simple">
+<li><strong>Resources</strong> are not available to re-implement work that is sometimes the
+result of multiple decades of effort from multiple researchers.</li>
+<li>The <strong>scientific endeavor</strong> is built on the practice of <strong>reproducing</strong> and <strong>building on the top</strong> of the efforts of our predecessors.</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id4">
+
+<h3>Motivation</h3>
+
+<p>The <em>lingua franca</em> of computing is the <strong>C programming language</strong> because
+most operating systems themselves are written in C.</p>
+<p>As a consequence,</p>
+<ul class="simple">
+<li><strong>Native binaries</strong> reflect characteristics and compatibility with of the C language</li>
+<li>The reference implementation of Python, <em>CPython</em>, is implemented in C</li>
+<li>CPython supports <strong>binary extension modules written in C</strong></li>
+<li>Most other pre-compiled programming languages have a <strong>compatibility layer
+with C</strong></li>
+<li>CPython is an excellent language to <strong>integrate scientific codes</strong>!</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id5">
+
+<h3>Motivation</h3>
+
+<p>Common programming languages compiled into native libraries for scientific
+computing include:</p>
+<ul class="simple">
+<li>Fortran</li>
+<li>C</li>
+<li>C++</li>
+<li>Cython</li>
+<li>Rust</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="build-components-and-requirements">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Build component categories:</p>
+<dl class="docutils">
+<dt>build tools</dt>
+<dd>Tools use in the build process, such as the compiler, linker, build systems,
+system introspection tool, and package manager</dd>
+</dl>
+
+
+
+
+</article>
+<article class="slide level-3" id="id6">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Example compilers:</p>
+<ul class="simple">
+<li>GCC</li>
+<li>Clang</li>
+<li>Visual Studio</li>
+</ul>
+<p><em>Compilers translate source code from a human readable to a machine readable
+form.</em></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id7">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Example linkers:</p>
+<ul class="simple">
+<li>ld</li>
+<li>ld.gold</li>
+<li>link.exe</li>
+</ul>
+<p><em>Linkers combine the results of compilers into a shared library that is
+executed at program runtime.</em></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id8">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Example build systems:</p>
+<ul class="simple">
+<li>distutils.build_ext</li>
+<li>Unix Makefiles</li>
+<li>Ninja</li>
+<li>MSBuild in Visual Studio</li>
+</ul>
+<p><em>Builds systems coordinate invocation of the compiler and linker, passing
+flags, and only out-of-date build targets are built.</em></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id9">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Example system introspection tools:</p>
+<ul class="simple">
+<li>CMake</li>
+<li>GNU Autotools</li>
+<li>Meson</li>
+</ul>
+<p><em>System introspection tools examine the host system for available build tools,
+the location of build dependencies, and properties of the build target to
+generate the appropriate build system configuration files.</em></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id10">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Example package managers:</p>
+<ul class="simple">
+<li>conda</li>
+<li>pip</li>
+<li>apt</li>
+<li>yum</li>
+<li>chocolatey</li>
+<li>homebrew</li>
+</ul>
+<p><em>Package managers resolve dependencies so the required build host artifacts are
+available for the build.</em></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id11">
+
+<h3>Build Components and Requirements</h3>
+
+<dl class="docutils">
+<dt>build host artifacts</dt>
+<dd>These are files required on the <em>host</em> system performing the build. This
+includes <strong>header files</strong>, <cite>*.h</cite> files, which define the C program <strong>symbols</strong>,
+i.e. variable and function names, for the native binary with which we want
+to integrate. This also usually includes the native binaries themselves,
+i.e. the <strong>executable or shared library</strong>. An important exception to this rule
+is <em>libpython</em>, which we do not need on some platforms due to <a class="reference external" href="https://scikit-build.readthedocs.io/en/latest/cmake-modules/targetLinkLibrariesWithDynamicLookup.html">weak linking
+rules</a>.</dd>
+</dl>
+
+
+
+
+</article>
+<article class="slide level-3" id="id12">
+
+<h3>Build Components and Requirements</h3>
+
+<dl class="docutils">
+<dt>target system artifacts</dt>
+<dd>These are artifacts intended to be run on the <strong>target</strong> system, typically the
+shared library C-extension.</dd>
+</dl>
+
+
+
+
+</article>
+<article class="slide level-3" id="id13">
+
+<h3>Build Components and Requirements</h3>
+
+<p>When the build <em>host</em> system is different from the <em>target</em> system, we are
+<strong>cross-compiling</strong>.</p>
+<p>For example, when we are building a Linux Python package on macOS is
+cross-compiling. In this case macOS is the <em>host</em> system and Linux is the
+<em>target</em> system.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id14">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Distributable binaries must use a <strong>compatible C-runtime</strong>.</p>
+<p>The table below lists the different C runtime implementations, compilers and
+their usual distribution mechanisms for each operating systems.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="26%" />
+<col width="24%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&#160;</th>
+<th class="head">Linux</th>
+<th class="head">MacOSX</th>
+<th class="head">Windows</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>C runtime</strong></td>
+<td><a class="reference external" href="https://en.wikipedia.org/wiki/GNU_C_Library">GNU C Library (glibc)</a></td>
+<td><a class="reference external" href="https://www.safaribooksonline.com/library/view/mac-os-x/0596003560/ch05s02.html">libSystem library</a></td>
+<td><a class="reference external" href="https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Runtime_libraries">Microsoft C run-time library</a></td>
+</tr>
+<tr class="row-odd"><td><strong>Compiler</strong></td>
+<td><a class="reference external" href="https://en.wikipedia.org/wiki/GNU_Compiler_Collection">GNU compiler (gcc)</a></td>
+<td><a class="reference external" href="https://en.wikipedia.org/wiki/Clang">clang</a></td>
+<td>Microsoft C/C++ Compiler (cl.exe)</td>
+</tr>
+<tr class="row-even"><td><strong>Provenance</strong></td>
+<td><a class="reference external" href="https://en.wikipedia.org/wiki/Package_manager">Package manager</a></td>
+<td>OSX SDK within <a class="reference external" href="https://en.wikipedia.org/wiki/Xcode#Version_comparison_table">XCode</a></td>
+<td><ul class="first last simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Microsoft_Visual_Studio">Microsoft Visual Studio</a></li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Microsoft_Windows_SDK">Microsoft Windows SDK</a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+</article>
+<article class="slide level-3" id="id15">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Linux C-runtime compatibility is determined by the version of <strong>glibc</strong> used
+for the build.</p>
+<p>The glibc library shared by the system is forwards compatible but not
+backwards compatible. That is, a package built on an older system <em>will</em>
+work on a newer system, while a package built on a newer system will not
+work on an older system.</p>
+<p>The <a class="reference external" href="https://github.com/pypa/manylinux">manylinux</a> project provides Docker
+images that have an older version of glibc to use for distributable Linux
+packages.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id16">
+
+<h3>Build Components and Requirements</h3>
+
+<p>The C-runtime on macOS is determined by a build time option, the <em>osx
+deployment target</em>, which defines the minmum version of macOS to support, e.g.
+<cite>10.9</cite>.</p>
+<p>A macOS system comes with support for running building binaries for its version of
+OSX and older versions of OSX.</p>
+<p>The XCode toolchain comes with SDK’s that support multiple target versions of OSX.</p>
+<p>When building a wheel, this can be specified with <cite>–plat-name</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">bdist_wheel</span> <span class="o">--</span><span class="n">plat</span><span class="o">-</span><span class="n">name</span> <span class="n">macosx</span><span class="o">-</span><span class="mf">10.6</span><span class="o">-</span><span class="n">x86_64</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id17">
+
+<h3>Build Components and Requirements</h3>
+
+<p>The C-runtime used on Windows is associated with the version of Visual Studio.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="33%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&#160;</th>
+<th class="head" colspan="2">Architecture</th>
+</tr>
+<tr class="row-even"><th class="head">CPython Version</th>
+<th class="head">x86 (32-bit)</th>
+<th class="head">x64 (64-bit)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>3.5 and above</strong></td>
+<td>Visual Studio 14 2015</td>
+<td>Visual Studio 14 2015 Win64</td>
+</tr>
+<tr class="row-even"><td><strong>3.3 to 3.4</strong></td>
+<td>Visual Studio 10 2010</td>
+<td>Visual Studio 10 2010 Win64</td>
+</tr>
+<tr class="row-odd"><td><strong>2.7 to 3.2</strong></td>
+<td>Visual Studio 9 2008</td>
+<td>Visual Studio 9 2008 Win64</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+</article>
+<article class="slide level-3" id="id18">
+
+<h3>Build Components and Requirements</h3>
+
+<p>Distributable binaries are also built to be compatible with a certain
+CPU architecture class. For example</p>
+<ul class="simple">
+<li>x86_64 (currently the most common)</li>
+<li>x86</li>
+<li>ppc64le</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="scientific-python-build-tools">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><strong>scikit-build</strong> is an improved build system generator for CPython C/C++/Fortran/Cython
+extensions.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id19">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><strong>scikit-build</strong> provides better support for additional compilers, build
+systems, cross compilation, and locating dependencies and their associated
+build requirements.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id20">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p>The <strong>scikit-build</strong> package is fundamentally just glue between
+the <cite>setuptools</cite> Python module and <a class="reference external" href="https://cmake.org/">CMake</a>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id21">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p>To build and install a project configured with scikit-build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id22">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p>To build and install a project configured with scikit-build for development:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id23">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p>To build and package a project configured with scikit-build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">wheel</span> <span class="o">-</span><span class="n">w</span> <span class="n">dist</span> <span class="o">.</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id24">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><strong>Conda</strong> is an open source package management system and environment management system that runs on Windows, macOS and Linux.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id25">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><strong>Conda</strong> quickly installs, runs and updates packages and their dependencies. Conda easily creates, saves, loads and switches between environments on your local computer.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id26">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><strong>Conda</strong> was created for Python programs, but it can package and distribute software for any language.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id27">
+
+<h3>Scientific Python Build Tools</h3>
+
+<p><em>scikit-build</em> and <em>conda</em> <strong>abstract away</strong> and <strong>manage platform-specific details</strong> for you!</p>
+
+
+
+
+</article>
+<article class="slide level-2" id="exercises">
+
+<h2>Exercises</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-1-build-a-python-package-with-a-c-extension-module">
+
+<h3>Exercise 1: Build a Python Package with a C++ Extension Module</h3>
+
+<p>Download the <a class="reference external" href="https://github.com/python-packaging-tutorial/hello-cpp">hello-cpp</a> example C++ project and build a wheel package
+with the commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">hello</span><span class="o">-</span><span class="n">cpp</span>
+<span class="n">pip</span> <span class="n">wheel</span> <span class="o">-</span><span class="n">w</span> <span class="n">dist</span> <span class="o">--</span><span class="n">verbose</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Examine files referenced in the build output. What is the purpose of all
+referenced files?</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-2-build-a-python-package-with-a-cython-extension-module">
+
+<h3>Exercise 2: Build a Python Package with a Cython Extension Module</h3>
+
+<p>Download the <a class="reference external" href="https://github.com/python-packaging-tutorial/hello-cython">hello-cython</a> example C++ project and build a wheel package
+with the commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">hello</span><span class="o">-</span><span class="n">cython</span>
+<span class="n">pip</span> <span class="n">wheel</span> <span class="o">-</span><span class="n">w</span> <span class="n">dist</span> <span class="o">--</span><span class="n">verbose</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Examine files referenced in the build output. What is the purpose of all
+referenced files?</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="bonus-exercise-3-build-a-distributable-linux-wheel-package">
+
+<h3>Bonus Exercise 3: Build a Distributable Linux Wheel Package</h3>
+
+<p>If Docker is installed, create a <a class="reference external" href="https://github.com/dockcross/dockcross">dockcross</a> <a class="reference external" href="https://github.com/pypa/manylinux">manylinux</a> bash driver script.
+From a bash shell, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cd into the hello-cpp project from Exercise 1</span>
+<span class="n">cd</span> <span class="n">hello</span><span class="o">-</span><span class="n">cpp</span>
+<span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">rm</span> <span class="n">dockcross</span><span class="o">/</span><span class="n">manylinux</span><span class="o">-</span><span class="n">x64</span> <span class="o">&gt;</span> <span class="o">./</span><span class="n">dockcross</span><span class="o">-</span><span class="n">manylinux</span><span class="o">-</span><span class="n">x64</span>
+<span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="o">./</span><span class="n">dockcross</span><span class="o">-</span><span class="n">manylinux</span><span class="o">-</span><span class="n">x64</span>
+</pre></div>
+</div>
+<p>The <em>dockcross</em> driver script simplifies execution of commands in the isolated
+Docker build environment that use sources in the current working directory.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id28">
+
+<h3>Bonus Exercise 3: Build a Distributable Linux Wheel Package</h3>
+
+<p>To build a distributable Python 3.6 Python wheel, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">dockcross</span><span class="o">-</span><span class="n">manylinux</span><span class="o">-</span><span class="n">x64</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="n">cp36</span><span class="o">-</span><span class="n">cp36m</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">pip</span> <span class="n">wheel</span> <span class="o">-</span><span class="n">w</span> <span class="n">dist</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Which will output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Processing</span> <span class="o">/</span><span class="n">work</span>
+<span class="n">Building</span> <span class="n">wheels</span> <span class="k">for</span> <span class="n">collected</span> <span class="n">packages</span><span class="p">:</span> <span class="n">hello</span><span class="o">-</span><span class="n">cpp</span>
+<span class="n">Running</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">bdist_wheel</span> <span class="k">for</span> <span class="n">hello</span><span class="o">-</span><span class="n">cpp</span> <span class="o">...</span> <span class="n">done</span>
+<span class="n">Stored</span> <span class="ow">in</span> <span class="n">directory</span><span class="p">:</span> <span class="o">/</span><span class="n">work</span><span class="o">/</span><span class="n">dist</span>
+<span class="n">Successfully</span> <span class="n">built</span> <span class="n">hello</span><span class="o">-</span><span class="n">cpp</span>
+</pre></div>
+</div>
+<p>and produce the wheel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">dist</span><span class="o">/</span><span class="n">hello_cpp</span><span class="o">-</span><span class="mf">1.2</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">cp36</span><span class="o">-</span><span class="n">cp36m</span><span class="o">-</span><span class="n">linux_x86_64</span><span class="o">.</span><span class="n">whl</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id29">
+
+<h3>Bonus Exercise 3: Build a Distributable Linux Wheel Package</h3>
+
+<p>To find the version of glibc required by the extension, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">dockcross</span><span class="o">-</span><span class="n">manylinux</span><span class="o">-</span><span class="n">x64</span> <span class="n">bash</span> <span class="o">-</span><span class="n">c</span> <span class="s1">&#39;cd dist &amp;&amp; unzip -o hello_cpp-1.2.3-cp36-cp36m-linux_x86_64.whl &amp;&amp; objdump -T hello/_hello.cpython-36m-x86_64-linux-gnu.so | grep GLIBC&#39;</span>
+</pre></div>
+</div>
+<p>What glibc version compatibility is required for this binary?</p>
+<p>manylinux: <a class="reference external" href="https://github.com/pypa/manylinux">https://github.com/pypa/manylinux</a></p>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

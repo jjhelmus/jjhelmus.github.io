@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Building and Uploading to PyPi &mdash; The Joy of Packaging 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="The Joy of Packaging 0.1 documentation" href="index.html" />
+    <link rel="next" title="Binaries and Dependencies" href="binaries_dependencies.html" />
+    <link rel="prev" title="Making a Python Package" href="setup_py.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="building-and-uploading-to-pypi">
+
+<h1>Building and Uploading to PyPi</h1>
+
+
+
+
+
+</article>
+<article class="slide level-2" id="learning-objectives">
+
+<h2>Learning Objectives</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="in-the-following-section-we-will">
+
+<h3>In the following section we will …</h3>
+
+<ul class="simple">
+<li>Review the packaging terminology</li>
+<li>Understand how to build, package and publish a python package</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-2" id="packaging-terminology-101">
+
+<h2>Packaging Terminology 101</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="introduction">
+
+<h3>Introduction</h3>
+
+<p>This section reviews the key python packaging concepts and definitions.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="pypi">
+
+<h3>PyPI</h3>
+
+<p>PyPI is the default <a class="reference external" href="https://packaging.python.org/glossary/#term-package-index">Package Index</a> for the Python community.
+It is open to all Python developers to consume and distribute their <strong>distributions</strong>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id4">
+
+<h3>PyPI</h3>
+
+<p>There are two instances of the Package Index:</p>
+<ul class="simple">
+<li>PyPI: Python Package Index hosted at <a class="reference external" href="https://pypi.org/">https://pypi.org/</a></li>
+<li>TestPyPI: a separate instance of the Python Package Index (PyPI) that allows you to try out the
+distribution tools and process without worrying about affecting the real index.
+TestPyPI is hosted at <a class="reference external" href="https://test.pypi.org">https://test.pypi.org</a></li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-python-package-index-pypi">https://packaging.python.org/glossary/#term-python-package-index-pypi</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="pip">
+
+<h3>pip</h3>
+
+<p>The <a class="reference external" href="https://www.pypa.io/en/latest/">PyPA</a> recommended tool for installing Python packages.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id5">
+
+<h3>pip</h3>
+
+<p>A multi-faceted tool:</p>
+<ul class="simple">
+<li>It is an <em>integration frontend</em> that takes a set of package requirements (e.g. a requirements.txt file)
+and attempts to update a working environment to satisfy those requirements. This may require locating,
+building, and installing a combination of <strong>distributions</strong>.</li>
+<li>It is a <strong>build frontend</strong> that can takes arbitrary source trees or source distributions and builds wheels
+from them.</li>
+</ul>
+<p>Reference: <a class="reference external" href="http://pip.readthedocs.io/">http://pip.readthedocs.io/</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id1">
+
+<h3>PyPA</h3>
+
+<p>The Python Packaging Authority (PyPA) is a working group that maintains many of the relevant
+projects in Python packaging.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id6">
+
+<h3>PyPA</h3>
+
+<p>The associated website <a class="reference external" href="https://www.pypa.io">https://www.pypa.io</a> references the PyPA Goals, Specifications and Roadmap
+as well as <a class="reference external" href="https://packaging.python.org/">Python Packaging User Guide</a>, a collection of tutorials
+and references to help you distribute and install Python packages with modern tools.</p>
+<p>Reference: <a class="reference external" href="https://www.pypa.io">https://www.pypa.io</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="source-distribution">
+
+<h3>Source distribution</h3>
+
+<ul class="simple">
+<li>Synonyms: sdist, Source release</li>
+<li>provides metadata + source files</li>
+<li>needed for installing<ul>
+<li>by a tool like pip</li>
+<li>or for generating a Built Distribution</li>
+</ul>
+</li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-source-distribution-or-sdist">https://packaging.python.org/glossary/#term-source-distribution-or-sdist</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="built-distribution">
+
+<h3>Built Distribution</h3>
+
+<ul class="simple">
+<li>Synonyms: bdist</li>
+<li>provides metadata + pre-built files</li>
+<li>only need to be moved (usually by pip) to the correct locations on the target system</li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-built-distribution">https://packaging.python.org/glossary/#term-built-distribution</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="python-distribution-pure-vs-non-pure">
+
+<h3>Python Distribution: pure vs non-pure</h3>
+
+<ul class="simple">
+<li><strong>pure</strong>:<ul>
+<li>Not specific to a CPU architecture</li>
+<li>No <a class="reference external" href="https://en.wikipedia.org/wiki/Application_binary_interface">ABI (Application Binary Interface)</a></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id7">
+
+<h3>Python Distribution: pure vs non-pure</h3>
+
+<ul class="simple">
+<li><strong>non-pure</strong><ul>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Application_binary_interface">ABI</a></li>
+<li>Platform specific</li>
+</ul>
+</li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-module">https://packaging.python.org/glossary/#term-module</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="binary-distribution">
+
+<h3>Binary Distribution</h3>
+
+<ul class="simple">
+<li>is a <strong>Built Distribution</strong></li>
+<li>is <strong>non-pure</strong></li>
+<li>uses platform-specific compiled extensions</li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-binary-distribution">https://packaging.python.org/glossary/#term-binary-distribution</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="wheel">
+
+<h3>Wheel</h3>
+
+<ul class="simple">
+<li>a <strong>Built Distribution</strong></li>
+<li>a ZIP-format archive with .whl extension<ul>
+<li><code class="docutils literal notranslate"><span class="pre">{distribution}-{version}(-{build</span> <span class="pre">tag})?-{python</span> <span class="pre">tag}-{abi</span> <span class="pre">tag}-{platform</span> <span class="pre">tag}.whl</span></code></li>
+</ul>
+</li>
+<li>described  by <a class="reference external" href="https://www.python.org/dev/peps/pep-0427/">PEP 427</a></li>
+</ul>
+<p>Reference: <a class="reference external" href="https://packaging.python.org/glossary/#term-wheel">https://packaging.python.org/glossary/#term-wheel</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="wheels-vs-conda-packages">
+
+<h3>Wheels vs. Conda packages</h3>
+
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Wheels</th>
+<th class="head">Conda packages</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Employed by pip, blessed by PyPA</td>
+<td>Foundation of Anaconda ecosystem</td>
+</tr>
+<tr class="row-odd"><td>Used by any python installation</td>
+<td>Used by conda python installations</td>
+</tr>
+<tr class="row-even"><td>Mostly specific to Python ecosystem</td>
+<td>General purpose (any ecosystem)</td>
+</tr>
+<tr class="row-odd"><td>Good mechanism for specifying range
+of python compatibility</td>
+<td>Primitive support for multiple
+python versions (noarch)</td>
+</tr>
+<tr class="row-even"><td>Depends on static linking or other
+system package managers to provide
+core libraries</td>
+<td>Can bundle core system-level shared
+libraries as packages, and resolve
+dependencies</td>
+</tr>
+</tbody>
+</table>
+<p>To learn more about Conda, see <a class="reference internal" href="conda.html#conda-build"><span class="std std-ref">Conda Packages</span></a> section.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="virtual-environment">
+
+<h3>Virtual Environment</h3>
+
+<p>An isolated Python environment that allows packages to be installed for use by a
+particular application, rather than being installed system wide.</p>
+<p>Learn more reading <a class="reference external" href="https://packaging.python.org/tutorials/installing-packages/#creating-and-using-virtual-environments">Creating Virtual Environments</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="build-system">
+
+<h3>Build system</h3>
+
+<p>Synonym: Build backend</p>
+<ul class="simple">
+<li><a class="reference external" href="https://setuptools.readthedocs.io">setuptools</a> associated with the <a class="reference external" href="https://wheel.readthedocs.io">wheel</a> package
+form the default build system. They support the creation of source and <strong>built distributions</strong> based on a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and
+optionally a <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> file.</li>
+<li><a class="reference external" href="https://flit.readthedocs.io/en/latest/">flit</a> is an alternative backend allowing to also create (and also publish)
+<strong>built distributions</strong>.</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="python-package-lifecycle">
+
+<h3>Python Package Lifecycle</h3>
+
+<img alt="_images/python-package-life-cycle.png" src="_images/python-package-life-cycle.png" />
+
+
+
+
+</article>
+<article class="slide level-2" id="tutorial">
+
+<h2>Tutorial</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="id3">
+
+<h3>Introduction</h3>
+
+<p>This section discusses how to build python packages (or distributions) and publish
+them in a central repository to streamline their installation. Finally, we conclude
+with exercises where we publish a package with the <a class="reference external" href="http://test.pypi.org/">Test Python Package Index</a>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="creating-an-environment">
+
+<h3>Creating an environment</h3>
+
+<p>Before developing or building your distribution, we highly recommend to create a
+dedicated environment. This is supported by both <code class="docutils literal notranslate"><span class="pre">conda</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="building-a-source-distribution">
+
+<h3>Building a source distribution</h3>
+
+<p>By leveraging the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script, setuptools can build a source
+distribution (a tar archive of all the files needed to build and install the package):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py sdist
+
+$ ls -1 dist
+SomePackage-1.0.tar.gz
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="building-a-wheel">
+
+<h3>Building a wheel</h3>
+
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip wheel . -w dist
+
+$ ls -1 dist
+SomePackage-1.0-py2.py3-none-any.whl
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id8">
+
+<h3>Building a wheel</h3>
+
+<p>This is equivalent to:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py bdist_wheel
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="installing-a-wheel">
+
+<h3>Installing a wheel</h3>
+
+<ul class="simple">
+<li>Install a package from PyPI:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install SomePackage
+<span class="o">[</span>...<span class="o">]</span>
+Successfully installed SomePackage
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id9">
+
+<h3>Installing a wheel</h3>
+
+<ul class="simple">
+<li>Install a package file:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install SomePackage-1.0-py2.py3-none-any.whl
+<span class="o">[</span>...<span class="o">]</span>
+Successfully installed SomePackage
+</pre></div>
+</div>
+<p>For more details, see <a class="reference external" href="https://pip.pypa.io/en/stable/quickstart/">QuickStart guide from pip documentation</a>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="installing-a-source-distribution">
+
+<h3>Installing a source distribution</h3>
+
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install SomePackage-1.0.tar.gz
+    <span class="o">[</span>...<span class="o">]</span>
+Successfully installed SomePackage
+</pre></div>
+</div>
+<p>It transparently builds the associated wheel and install it.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="publishing-to-pypi">
+
+<h3>Publishing to PyPI</h3>
+
+<p><a class="reference external" href="https://twine.readthedocs.io">twine</a> utility is used for publishing
+Python packages on PyPI.</p>
+<p>It is available as both a conda and a pypi package.</p>
+<p>Learn more reading <a class="reference external" href="https://packaging.python.org/guides/using-testpypi/">Using TestPiPY</a>.</p>
+
+
+
+
+</article>
+<article class="slide level-2" id="exercises">
+
+<h2>Exercises</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-1-prepare-environment">
+
+<h3>Exercise 1: Prepare environment</h3>
+
+<ul class="simple">
+<li>In the context of this tutorial, because participants already <a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial#installation-instructions">installed miniconda</a>,
+we will create a conda environment and install packages using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">SomePackage</span></code>.</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># create and activate a dedicated environment named &quot;hello-pypi&quot;</span>
+conda create -n hello-pypi -y -c conda-forge
+conda activate hello-pypi
+
+<span class="c1"># install pip, wheel and twine</span>
+conda install -y twine wheel pip
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id10">
+
+<h3>Exercise 1: Prepare environment</h3>
+
+<ul class="simple">
+<li>Create an account on TestPyPI (<a class="reference external" href="https://test.pypi.org/account/register/">https://test.pypi.org/account/register/</a>)</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-2-build-source-distribution-and-wheel">
+
+<h3>Exercise 2: Build source distribution and wheel</h3>
+
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/python-packaging-tutorial/hello-pypi/archive/master.zip">Download</a> (or
+<a class="reference external" href="https://github.com/python-packaging-tutorial/hello-pypi">checkout</a> using git) the sources
+of our <code class="docutils literal notranslate"><span class="pre">hello-pypi</span></code> sample project:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -y wget
+wget https://github.com/python-packaging-tutorial/hello-pypi/archive/master.zip
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id11">
+
+<h3>Exercise 2: Build source distribution and wheel</h3>
+
+<ul class="simple">
+<li>Extract sources</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -y unzip
+unzip master.zip
+<span class="nb">cd</span> hello-pypi-master
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id12">
+
+<h3>Exercise 2: Build source distribution and wheel</h3>
+
+<ul class="simple">
+<li>Modify package name so that it is unique</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id13">
+
+<h3>Exercise 2: Build source distribution and wheel</h3>
+
+<ul class="simple">
+<li>Then, build the source distribution:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py sdist
+</pre></div>
+</div>
+<ul class="simple">
+<li>And finally, build the wheel:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip wheel . -w dist
+</pre></div>
+</div>
+<ul class="simple">
+<li>Make sure artifacts have been generated in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> subdirectory.</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-3-publish-artifacts">
+
+<h3>Exercise 3: Publish artifacts</h3>
+
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="bonus-exercise-4-publish-artifacts-automating-authentication">
+
+<h3>Bonus Exercise 4: Publish artifacts automating authentication</h3>
+
+<ul class="simple">
+<li>Delete <code class="docutils literal notranslate"><span class="pre">hello-pypi-master</span></code> directory and extract archive again.</li>
+<li>Update name of package and rebuild source distribution and wheel.</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id14">
+
+<h3>Bonus Exercise 4: Publish artifacts automating authentication</h3>
+
+<ul class="simple">
+<li>Create file <code class="docutils literal notranslate"><span class="pre">.pypirc</span></code> in your home directory with the following content:</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">distutils</span><span class="p">]</span>
+<span class="n">index</span><span class="o">-</span><span class="n">servers</span><span class="o">=</span>
+    <span class="n">pypi</span>
+    <span class="n">testpypi</span>
+
+<span class="p">[</span><span class="n">testpypi</span><span class="p">]</span>
+<span class="n">repository</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">pypi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">legacy</span><span class="o">/</span>
+<span class="n">username</span><span class="p">:</span> <span class="n">your</span> <span class="n">testpypi</span> <span class="n">username</span>
+<span class="n">password</span><span class="p">:</span> <span class="n">your</span> <span class="n">testpypi</span> <span class="n">password</span>
+
+<span class="p">[</span><span class="n">pypi</span><span class="p">]</span>
+<span class="n">username</span><span class="p">:</span> <span class="n">your</span> <span class="n">testpypi</span> <span class="n">username</span>
+<span class="n">password</span><span class="p">:</span> <span class="n">your</span> <span class="n">testpypi</span> <span class="n">password</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id15">
+
+<h3>Bonus Exercise 4: Publish artifacts automating authentication</h3>
+
+<ul class="simple">
+<li>Publish package on TestPyPI:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ twine upload --repository testpypi dist/*
+</pre></div>
+</div>
+<p>Omitting the <code class="docutils literal notranslate"><span class="pre">-repository</span> <span class="pre">testpypi</span></code> argument allows to upload
+to the regular PyPI server.</p>
+
+
+
+
+</article>
+<article class="slide level-2" id="resources">
+
+<h2>Resources</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="where-do-i-go-to-figure-this-out">
+
+<h3>Where do I go to figure this out?</h3>
+
+<p>This is a really good guide:</p>
+<p>Python Packaging User Guide:</p>
+<p><a class="reference external" href="https://packaging.python.org/">https://packaging.python.org/</a></p>
+<p>and a more detailed tutorial:</p>
+<p><a class="reference external" href="http://python-packaging.readthedocs.io/en/latest/">http://python-packaging.readthedocs.io/en/latest/</a></p>
+<p><strong>Follow one of them</strong></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id16">
+
+<h3>Where do I go to figure this out?</h3>
+
+<p>There is a sample project here:</p>
+<p><a class="reference external" href="https://github.com/pypa/sampleproject">https://github.com/pypa/sampleproject</a></p>
+<p>(this has all the complexity you might need…)</p>
+<p>You can use this as a template for your own packages.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id17">
+
+<h3>Where do I go to figure this out?</h3>
+
+<p>Here is an opinionated update – a little more fancy, but some good ideas:</p>
+<p><a class="reference external" href="https://blog.ionelmc.ro/2014/05/25/python-packaging/">https://blog.ionelmc.ro/2014/05/25/python-packaging/</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id18">
+
+<h3>Where do I go to figure this out?</h3>
+
+<p>Rather than doing it by hand, you can use the nifty “cookie cutter” project:</p>
+<p><a class="reference external" href="https://cookiecutter.readthedocs.io/en/latest/">https://cookiecutter.readthedocs.io/en/latest/</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id19">
+
+<h3>Where do I go to figure this out?</h3>
+
+<p>And there are a few templates that can be used with that.</p>
+<p>The core template written by the author:</p>
+<p><a class="reference external" href="https://github.com/audreyr/cookiecutter-pypackage">https://github.com/audreyr/cookiecutter-pypackage</a></p>
+<p>And one written by the author of the opinionated blog post above:</p>
+<p><a class="reference external" href="https://github.com/ionelmc/cookiecutter-pylibrary">https://github.com/ionelmc/cookiecutter-pylibrary</a></p>
+<p>Either are great starting points.</p>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

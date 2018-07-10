@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Conda Packages &mdash; The Joy of Packaging 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="The Joy of Packaging 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Binaries and Dependencies" href="binaries_dependencies.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="conda-packages">
+
+<h1>Conda Packages</h1>
+
+
+
+
+
+</article>
+<article class="slide level-2" id="building-conda-packages">
+
+<h2>Building Conda Packages</h2>
+
+<p>A package system for anything…</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="wheels-vs-conda-packages">
+
+<h3>Wheels vs. Conda packages</h3>
+
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Wheels</th>
+<th class="head">Conda packages</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Employed by pip, blessed by PyPA</td>
+<td>Foundation of Anaconda ecosystem</td>
+</tr>
+<tr class="row-odd"><td>Used by any python installation</td>
+<td>Used by conda python installations</td>
+</tr>
+<tr class="row-even"><td>Mostly specific to Python ecosystem</td>
+<td>General purpose (any ecosystem)</td>
+</tr>
+<tr class="row-odd"><td>Good mechanism for specifying range
+of python compatibility</td>
+<td>Primitive support for multiple
+python versions (noarch)</td>
+</tr>
+<tr class="row-even"><td>Depends on static linking or other
+system package managers to provide
+core libraries</td>
+<td>Can bundle core system-level shared
+libraries as packages, and resolve
+dependencies</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+</article>
+<article class="slide level-3" id="introducing-conda-build">
+
+<h3>Introducing conda-build</h3>
+
+<ul>
+<li><p class="first">Orchestrates environment creation, activation, and build/test processes</p>
+</li>
+<li><p class="first">Can build conda packages and/or wheels</p>
+</li>
+<li><p class="first">Separate project from conda, but very tightly integrated</p>
+</li>
+<li><p class="first">Open-source, actively developed:</p>
+<p><a class="reference external" href="https://github.com/conda/conda-build">https://github.com/conda/conda-build</a></p>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="excercise-lets-use-conda-build">
+
+<h3>Excercise: let’s use <code class="docutils literal notranslate"><span class="pre">conda-build</span></code></h3>
+
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install conda-build
+</pre></div>
+</div>
+<ul class="simple">
+<li>Windows only:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install m2-patch posix
+</pre></div>
+</div>
+<ul class="simple">
+<li>All platforms:</li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> python-packaging-tutorial/conda_build_recipes
+conda build 01_minimum
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="what-happened">
+
+<h3>What happened?</h3>
+
+<ul class="simple">
+<li>Templates filled in, recipe interpreted</li>
+<li>Build environment created (isolated)</li>
+<li>Build script run</li>
+<li>New files in build environment bundled into package</li>
+<li>Test environment created (isolated)</li>
+<li>Tests run on new package</li>
+<li>cleanup</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="obtaining-recipes">
+
+<h3>Obtaining recipes</h3>
+
+<ul>
+<li><p class="first">Existing recipes (best)</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/AnacondaRecipes">https://github.com/AnacondaRecipes</a></li>
+<li><a class="reference external" href="https://github.com/conda-forge">https://github.com/conda-forge</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Skeletons from other repositories
+(PyPI, CRAN, CPAN, RPM)</p>
+</li>
+<li><p class="first">DIY</p>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="anaconda-recipes">
+
+<h3>Anaconda Recipes</h3>
+
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/AnacondaRecipes">https://github.com/AnacondaRecipes</a></li>
+<li>Official recipes that Anaconda uses for building packages</li>
+<li>Since Anaconda 5.0, forked from conda-forge recipes.</li>
+<li>Intended to be compatible with conda-forge long-term</li>
+<li>Presently, ahead of conda-forge on use of conda-build 3 features</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="conda-forge">
+
+<h3>Conda-forge</h3>
+
+<img alt="_images/conda-forge.png" src="_images/conda-forge.png" />
+<p><a class="reference external" href="https://conda-forge.org">https://conda-forge.org</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id4">
+
+<h3>Conda-forge</h3>
+
+<ul class="simple">
+<li><a class="reference external" href="https://conda-forge.org">https://conda-forge.org</a></li>
+<li>Numfocus-affiliated community organization made up of volunteers</li>
+<li>One github repository per recipe<ul>
+<li>Fine granularity over permissions</li>
+</ul>
+</li>
+<li>Heavy use of automation for building, deploying, and updating recipes</li>
+<li>Free builds on public CI services (TravisCI, CircleCI, Appveyor)</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="skeletons">
+
+<h3>Skeletons</h3>
+
+<ul class="simple">
+<li>Read metadata from upstream repository</li>
+<li>Translate that into a recipe</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="simple">
+<li><strong>Will</strong> save you some boilerplate work</li>
+<li><strong>Might</strong> work out of the box<ul>
+<li>(should not assume automatic, though)</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="conda-skeleton">
+
+<h3>conda skeleton</h3>
+
+<p><strong>conda skeleton pypi:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda skeleton pypi &lt;package name on pypi&gt;
+
+conda skeleton pypi click
+
+conda skeleton pypi --recursive pyinstrument
+</pre></div>
+</div>
+<p><strong>conda skeleton cran</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda skeleton cran &lt;name of pkg on cran&gt;
+
+conda skeleton cran acs
+
+conda skeleton cran --recursive biwt
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="when-all-else-fails-write-a-recipe">
+
+<h3>When all else fails, write a recipe</h3>
+
+<p>Only required section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-create-a-basic-recipe">
+
+<h3>Exercise: create a basic recipe</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/01_minimum">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/01_minimum</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="source-types">
+
+<h3>Source types</h3>
+
+<ul class="simple">
+<li>url</li>
+<li>git</li>
+<li>hg</li>
+<li>svn</li>
+<li>local path</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#source-section">meta.yaml source section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-point-your-recipe-at-local-files">
+
+<h3>Exercise: point your recipe at local files</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/02_local_source">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/02_local_source</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="building-packages">
+
+<h3>Building packages</h3>
+
+<p>Lots of ways, but let’s start simple:</p>
+<ul class="simple">
+<li>build.sh (unix)</li>
+<li>bld.bat (windows)</li>
+</ul>
+<p>Filenames are of paramount importance here</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="build-sh-stuff-to-run-on-mac-linux">
+
+<h3>build.sh: stuff to run on mac/linux</h3>
+
+<ul class="simple">
+<li>It’s a shell script: do what you want</li>
+<li>Snapshot files in $PREFIX before running script; again after</li>
+<li>Files that are new in $PREFIX are what make up your package</li>
+<li>Several useful env vars for use in build.sh: <a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/environment-variables.html">https://conda.io/docs/user-guide/tasks/build-packages/environment-variables.html</a></li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="bld-bat-stuff-to-run-on-windows">
+
+<h3>bld.bat: stuff to run on windows</h3>
+
+<ul class="simple">
+<li>It’s a batch script: do what you want</li>
+<li>Snapshot files in %PREFIX% before running script; again after</li>
+<li>Files that are new in %PREFIX% are what make up your package</li>
+<li>Several useful env vars for use in bld.bat: <a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/environment-variables.html">https://conda.io/docs/user-guide/tasks/build-packages/environment-variables.html</a></li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-copy-a-file-into-the-package">
+
+<h3>Exercise: Copy a file into the package</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/03_copy_file">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/03_copy_file</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="build-options">
+
+<h3>Build options</h3>
+
+<dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">number</span></code>:</dt>
+<dd>version reference of recipe (as opposed to version of source code)</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">script</span></code>:</dt>
+<dd>quick build steps, avoid separate build.sh/bld.bat files</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">skip</span></code>:</dt>
+<dd>skip building recipe on some platforms</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">entry_points</span></code>:</dt>
+<dd>python code locations to create executables for</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">run_exports</span></code>:</dt>
+<dd>add dependencies to downstream consumers to ensure compatibility</dd>
+</dl>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#build-section">meta.yaml build section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="requirements">
+
+<h3>Requirements</h3>
+
+<img alt="_images/build_host_run.png" src="_images/build_host_run.png" />
+
+
+
+
+</article>
+<article class="slide level-3" id="build-requirements">
+
+<h3>Build requirements</h3>
+
+<ul class="simple">
+<li>Tools to build packages with; things that don’t directly go into headers or linking</li>
+<li>Compilers</li>
+<li>autotools, pkg-config, m4, cmake</li>
+<li>archive tools</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="host-requirements">
+
+<h3>Host requirements</h3>
+
+<ul class="simple">
+<li>External dependencies for the package that need to be present at build time</li>
+<li>Headers, libraries, python/R/perl</li>
+<li>Python deps used in setup.py</li>
+<li>Not available at runtime, unless also specified in run section</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="run-requirements">
+
+<h3>Run requirements</h3>
+
+<ul class="simple">
+<li>Things that need to be present when the package is installed on the end-user system</li>
+<li>Runtime libraries</li>
+<li>Python dependencies at runtime</li>
+<li>Not available at build time unless also specified in build/host section</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="requirements-build-vs-host">
+
+<h3>Requirements: build vs. host</h3>
+
+<ul class="simple">
+<li>Historically, only build</li>
+<li>Still fine to use only build</li>
+<li>host introduced for cross compiling</li>
+<li>host also useful for separating build tools from packaging environment</li>
+</ul>
+<p><strong>If in doubt, put everything in host</strong></p>
+<ul class="simple">
+<li>build is treated same as host for old-style recipes
+(only build, no <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">compiler()</span> <span class="pre">}}</span></code>)</li>
+<li>packages are bundled from host env, not build env</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-use-python-in-a-build-script">
+
+<h3>Exercise: use Python in a build script</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/04_python_in_build">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/04_python_in_build</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="post-build-tests">
+
+<h3>Post-build Tests</h3>
+
+<ul class="simple">
+<li>Help ensure that you didn’t make a packaging mistake</li>
+<li>Ideally checks that necessary shared libraries are included as dependencies</li>
+</ul>
+<p><strong>Dependencies</strong></p>
+<p>Describe dependencies that are required for the tests
+(but not for normal package usage)</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">requires</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pytest</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="post-build-tests-test-files">
+
+<h3>Post-build tests: test files</h3>
+
+<dl class="docutils">
+<dt>All platforms:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">run_test.pl</span></code>, <code class="docutils literal notranslate"><span class="pre">run_test.py</span></code>, <code class="docutils literal notranslate"><span class="pre">run_test.r</span></code>, <code class="docutils literal notranslate"><span class="pre">run_test.lua</span></code></dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="docutils">
+<dt>Windows:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">run_test.bat</span></code></dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="docutils">
+<dt>Linux / Mac:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">run_test.sh</span></code></dd>
+</dl>
+
+
+
+
+</article>
+<article class="slide level-3" id="id1">
+
+<h3>Post-build tests</h3>
+
+<ul class="simple">
+<li>May have specific requirements</li>
+<li>May specify files that must be bundled for tests (<code class="docutils literal notranslate"><span class="pre">source_files</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">imports:</span></code>
+language specific imports to try, to verify correct installation</li>
+<li><code class="docutils literal notranslate"><span class="pre">commands:</span></code>
+sequential shell-based commands to run (not OS-specific)</li>
+</ul>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#test-section">https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#test-section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="import-tests">
+
+<h3>Import Tests</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">imports</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dateutil</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dateutil.rrule</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dateutil.parser</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dateutil.tz</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="test-commands">
+
+<h3>Test commands</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl --version</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl-config --features</span>  <span class="c1"># [not win]</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl-config --protocols</span>  <span class="c1"># [not win]</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl https://some.website.com</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-add-some-tests">
+
+<h3>Exercise: add some tests</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/05_test_python">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/05_test_python</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="outputs-more-than-one-pkg-per-recipe">
+
+<h3>Outputs - more than one pkg per recipe</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">some-split</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+
+<span class="l l-Scalar l-Scalar-Plain">outputs</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">subpkg</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">subpkg2</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id5">
+
+<h3>Outputs - more than one pkg per recipe</h3>
+
+<ul class="simple">
+<li>Useful for consolidating related recipes that share (large) source</li>
+<li>Reduce update burden</li>
+<li>Reduce build time by keeping some parts of the build, while looping over other parts</li>
+<li>Also output different types of packages from one recipe (wheels)</li>
+</ul>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#outputs-section">https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#outputs-section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="about-section">
+
+<h3>About section</h3>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="_images/about_section.png" src="_images/about_section.png" />
+
+
+
+
+</article>
+<article class="slide level-3" id="extra-section-free-for-all">
+
+<h3>Extra section: free-for-all</h3>
+
+<ul class="simple">
+<li>Used for external tools or state management</li>
+<li>No schema</li>
+<li>Conda-forge’s maintainer list</li>
+<li>Conda-build’s notion of whether a recipe is “final”</li>
+</ul>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#extra-section">https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#extra-section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="conditional-lines-selectors">
+
+<h3>Conditional lines (selectors)</h3>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">some_content</span>    <span class="c1"># [some expression]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>content inside <code class="docutils literal notranslate"><span class="pre">[...]</span></code> is eval’ed</li>
+<li>namespace includes OS info, python info, and a few others</li>
+</ul>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#preprocessing-selectors">https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#preprocessing-selectors</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-limit-a-recipe-to-only-linux">
+
+<h3>Exercise: Limit a Recipe to Only Linux</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">example_skip_recipe</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">skip</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id6">
+
+<h3>Exercise: Limit a Recipe to Only Linux</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">example_skip_recipe</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">skip</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>  <span class="c1"># [not linux]</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="intro-to-templating-with-jinja2">
+
+<h3>Intro to Templating with Jinja2</h3>
+
+<ul>
+<li><p class="first">Fill in information dynamically</p>
+<blockquote>
+<div><ul class="simple">
+<li>git tag info</li>
+<li>setup.py recipe data</li>
+<li>centralized version numbering</li>
+<li>string manipulation</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="how-does-templating-save-you-time">
+
+<h3>How does Templating Save You Time?</h3>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="nb">set</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;3.0.2&quot;</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="n">package</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">example</span>
+  <span class="n">version</span><span class="p">:</span> <span class="p">{{</span> <span class="n">version</span> <span class="p">}}</span>
+<span class="n">source</span><span class="p">:</span>
+  <span class="n">url</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">site</span><span class="o">/</span><span class="p">{{</span><span class="n">version</span><span class="p">}}</span><span class="o">.</span><span class="n">tgz</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="jinja2-templating-in-meta-yaml">
+
+<h3>Jinja2 Templating in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code></h3>
+
+<p>Set variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{% set somevar=”someval” %}
+</pre></div>
+</div>
+<p>Use variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span> <span class="n">somevar</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>Expressions in <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">}}</span></code> are roughly python</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="jinja2-conditionals">
+
+<h3>Jinja2 conditionals</h3>
+
+<p>Selectors are one line only.  When you want to toggle a block, use jinja2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%-</span> <span class="k">if</span> <span class="n">foo</span> <span class="o">-%</span><span class="p">}</span>
+
+<span class="n">toggled</span> <span class="n">content</span>
+
+<span class="n">on</span> <span class="n">many</span> <span class="n">lines</span>
+
+<span class="p">{</span><span class="o">%</span> <span class="n">endif</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-use-jinja2-to-reduce-edits">
+
+<h3>Exercise: use Jinja2 to reduce edits</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">source</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">http://my.web/abc-1.2.3.tgz</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id7">
+
+<h3>Exercise: use Jinja2 to reduce edits</h3>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{% set version=”1.2.3” %}
+package:
+  name: abc
+  version: {{ version }}
+
+source:
+  url: http://w/abc-{{version}}.tgz
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="variants-jinja2-on-steroids">
+
+<h3>Variants: Jinja2 on steroids</h3>
+
+<p>Matrix specification in yaml files</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">somevar</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">2.0</span>
+
+<span class="l l-Scalar l-Scalar-Plain">anothervar</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="all-variant-variables-exposed-in-jinja2">
+
+<h3>All variant variables exposed in jinja2</h3>
+
+<p>In meta.yaml,</p>
+<p><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">somevar</span> <span class="pre">}}</span></code></p>
+<p>And this loops over values</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-try-looping">
+
+<h3>Exercise: try looping</h3>
+
+<p>meta.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">skip</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span> <span class="c1"># [skipvar]</span>
+</pre></div>
+</div>
+<p>conda_build_config.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">skipvar</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id8">
+
+<h3>Exercise: try looping</h3>
+
+<p>meta.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python {{ python }}</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python {{ python }}</span>
+</pre></div>
+</div>
+<p>conda_build_config.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">python</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">2.7</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3.6</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id9">
+
+<h3>Exercise: try looping</h3>
+
+<p>meta.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">abc</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+  <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id10">
+
+<h3>Exercise: try looping</h3>
+
+<p>conda_build_config.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">python</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">2.7</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3.6</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="jinja2-functions">
+
+<h3>Jinja2 functions</h3>
+
+<p>loading source data:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">load_setup_py_data</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">load_file_regex</span></code></p>
+</div></blockquote>
+<p>Dynamic Pinning:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">pin_compatible</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">pin_subpackage</span></code></p>
+</div></blockquote>
+<p>Compatibility Control:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">compiler</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">cdt</span></code></p>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="slide level-3" id="loading-setup-py-data">
+
+<h3>Loading setup.py data</h3>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{% set setup_data = load_setup_py_data() %}
+
+package:
+  name: abc
+  version: {{ setup_data[‘version’] }}
+</pre></div>
+</div>
+<ul class="simple">
+<li>Primarily a development recipe tool - release recipes specify version instead, and template source download link</li>
+<li>Centralizing version info is very nice - see also <code class="docutils literal notranslate"><span class="pre">versioneer</span></code>, <code class="docutils literal notranslate"><span class="pre">setuptools_scm</span></code>, <code class="docutils literal notranslate"><span class="pre">autover</span></code>, and many other auto-version tools</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="loading-arbitrary-data">
+
+<h3>Loading arbitrary data</h3>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="nb">set</span> <span class="n">data</span> <span class="o">=</span> <span class="n">load_file_regex</span><span class="p">(</span><span class="n">load_file</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">,</span>
+              <span class="n">regex_pattern</span><span class="o">=</span><span class="s1">&#39;git_tag: ([</span><span class="se">\\</span><span class="s1">d.]+)&#39;</span><span class="p">)</span> <span class="o">%</span><span class="p">}</span>
+
+<span class="n">package</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">conda</span><span class="o">-</span><span class="n">build</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">get</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">data</span>
+  <span class="n">version</span><span class="p">:</span> <span class="p">{{</span> <span class="n">data</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Useful when software provides version in some arbitrary file</li>
+<li>Primarily a development recipe tool - release recipes specify version instead, and template source download link</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="dynamic-pinning">
+
+<h3>Dynamic pinning</h3>
+
+<p>Use in meta.yaml, generally in requirements section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">host</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">numpy</span>
+  <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{{</span> <span class="nv">pin_compatible(‘numpy’)</span> <span class="p p-Indicator">}}</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id11">
+
+<h3>Dynamic pinning</h3>
+
+<p>Use in meta.yaml, generally in requirements section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">host</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">numpy</span>
+  <span class="l l-Scalar l-Scalar-Plain">run</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">{{</span> <span class="nv">pin_compatible(‘numpy’)</span> <span class="p p-Indicator">}}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Pin run req based on what is present at build time</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="dynamic-pinning-in-practice">
+
+<h3>Dynamic pinning in practice</h3>
+
+<p>Used a lot with numpy:</p>
+<p><a class="reference external" href="https://github.com/AnacondaRecipes/scikit-image-feedstock/blob/master/recipe/meta.yaml">https://github.com/AnacondaRecipes/scikit-image-feedstock/blob/master/recipe/meta.yaml</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="dynamic-pinning-within-recipes">
+
+<h3>Dynamic pinning within recipes</h3>
+
+<p>Refer to other outputs within the same recipe</p>
+<blockquote>
+<div><ul class="simple">
+<li>When intradependencies exist</li>
+<li>When shared libraries are consumed by other libraries</li>
+</ul>
+</div></blockquote>
+<p><a class="reference external" href="https://github.com/AnacondaRecipes/aggregate/blob/master/clang/meta.yaml">https://github.com/AnacondaRecipes/aggregate/blob/master/clang/meta.yaml</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="compilers">
+
+<h3>Compilers</h3>
+
+<p>Use in meta.yaml in requirements section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="p p-Indicator">{{</span> <span class="nv">compiler(‘c’)</span> <span class="p p-Indicator">}}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>explicitly declare language needs</li>
+<li>compiler packages can be actual compilers, or just activation scripts</li>
+<li>Compiler packages utilize run_exports to add necessary runtime dependencies automatically</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="why-put-compilers-into-conda">
+
+<h3>Why put compilers into Conda?</h3>
+
+<ul class="simple">
+<li>Explicitly declaring language needs makes reproducing packages with recipe simpler</li>
+<li>Binary compatibility can be versioned and tracked better</li>
+<li>No longer care what the host OS used to build packages is</li>
+<li>Can still use system compilers - just need to give conda-build information on metadata about them.  Opportunity for version check enforcement.</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="run-exports">
+
+<h3><code class="docutils literal notranslate"><span class="pre">run_exports</span></code></h3>
+
+<p>“if you build and link against library abc, you need a runtime dependency on library abc”</p>
+<p>This is annoying to keep track of in recipes.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="id12">
+
+<h3><code class="docutils literal notranslate"><span class="pre">run_exports</span></code></h3>
+
+<img alt="_images/run_exports.png" src="_images/run_exports.png" />
+
+
+
+
+</article>
+<article class="slide level-3" id="id13">
+
+<h3><code class="docutils literal notranslate"><span class="pre">run_exports</span></code></h3>
+
+<ul class="simple">
+<li>Add host or run dependencies for downstream packages that depend on upstream that specifies run_exports</li>
+<li>Expresses idea that “if you build and link against library abc, you need a runtime dependency on library abc”</li>
+<li>Simplifies version tracking</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-make-a-run-exports-package">
+
+<h3>Exercise: make a run_exports package</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/06_has_run_exports">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/06_has_run_exports</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-use-a-run-exports-package">
+
+<h3>Exercise: use a run_exports package</h3>
+
+<p><a class="reference external" href="https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/07_uses_run_exports">https://github.com/python-packaging-tutorial/python-packaging-tutorial/tree/master/conda_build_recipes/07_uses_run_exports</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="uploading-packages-anaconda-org">
+
+<h3>Uploading packages: anaconda.org</h3>
+
+<ul class="simple">
+<li>Sign-up:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">https://anaconda.org/</span></code></li>
+</ul>
+</li>
+<li>Requirement:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">anaconda-client</span></code></li>
+</ul>
+</li>
+<li>CLI: anaconda upload path-to-package</li>
+<li>conda-build auto-upload:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">anaconda_upload</span> <span class="pre">True</span></code></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-2" id="fin">
+
+<h2>Fin</h2>
+
+
+
+
+
+</article>
+<article class="slide level-2" id="extra-slides">
+
+<h2>Extra slides</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="source-patches">
+
+<h3>Source Patches</h3>
+
+<ul class="simple">
+<li>patch files live alongside meta.yaml</li>
+<li>create patches with:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">diff</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">format-patch</span></code></li>
+</ul>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#source-section">meta.yaml source section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-lets-make-a-patch">
+
+<h3>Exercise: let’s make a patch</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">package</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">test-patch</span>
+  <span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1.2.3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">source</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://zlib.net/zlib-1.2.11.tar.gz</span>
+
+<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">script</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">exit 1</span>
+</pre></div>
+</div>
+
+
+
+
+</article>
+<article class="slide level-3" id="id14">
+
+<h3>Exercise: let’s make a patch</h3>
+
+<ul>
+<li><p class="first">Builds that fail leave their build folders in place</p>
+</li>
+<li><p class="first">look in output for source tree in:</p>
+<p><code class="docutils literal notranslate"><span class="pre">*/conda-bld/test-patch_&lt;numbers&gt;/work</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">cd</span></code> there</p>
+</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id15">
+
+<h3>Exercise: let’s make a patch</h3>
+
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git init
+
+git add *
+
+git commit -am “init”
+
+edit file of choice
+
+git commit -m “changing file because …”
+
+git format-patch HEAD~1
+</pre></div>
+</div>
+<ul class="simple">
+<li>copy that patch back alongside meta.yaml</li>
+<li>modify meta.yaml to include the patch</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="multiple-sources">
+
+<h3>Multiple sources</h3>
+
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">source</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://package1.com/a.tar.bz2</span>
+    <span class="l l-Scalar l-Scalar-Plain">folder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">stuff</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://package1.com/b.tar.bz2</span>
+    <span class="l l-Scalar l-Scalar-Plain">folder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">stuff</span>
+    <span class="l l-Scalar l-Scalar-Plain">patches</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">something.patch</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git_url</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">https://github.com/conda/conda-build</span>
+    <span class="l l-Scalar l-Scalar-Plain">folder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">conda-build</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#source-section">meta.yaml source section</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="outputs-rules">
+
+<h3>Outputs rules</h3>
+
+<ul class="simple">
+<li>List of dicts</li>
+<li>Each list must have <code class="docutils literal notranslate"><span class="pre">name</span></code> or <code class="docutils literal notranslate"><span class="pre">type</span></code> key</li>
+<li>May use all entries from <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements</span></code>, <code class="docutils literal notranslate"><span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">about</span></code> sections</li>
+<li>May specify files to bundle either using globs or by running a script</li>
+</ul>
+<p><strong>Outputs Examples</strong></p>
+<p><a class="reference external" href="https://github.com/AnacondaRecipes/curl-feedstock/blob/master/recipe/meta.yaml">https://github.com/AnacondaRecipes/curl-feedstock/blob/master/recipe/meta.yaml</a></p>
+<p><a class="reference external" href="https://github.com/AnacondaRecipes/aggregate/blob/master/ctng-compilers-activation-feedstock/recipe/meta.yaml">https://github.com/AnacondaRecipes/aggregate/blob/master/ctng-compilers-activation-feedstock/recipe/meta.yaml</a></p>
+
+
+
+
+</article>
+<article class="slide level-3" id="exercise-split-a-package">
+
+<h3>Exercise: Split a Package</h3>
+
+<p>Curl is a library and an executable.  Splitting them lets us clarify where Curl is only a build time dependency, and where it also needs to be a runtime dependency.</p>
+<p><strong>Starting point:</strong></p>
+<p><a class="reference external" href="https://github.com/conda-forge/curl-feedstock/tree/master/recipe">https://github.com/conda-forge/curl-feedstock/tree/master/recipe</a></p>
+<p><strong>Solution:</strong></p>
+<p><a class="reference external" href="https://github.com/AnacondaRecipes/curl-feedstock/tree/master/recipe">https://github.com/AnacondaRecipes/curl-feedstock/tree/master/recipe</a></p>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

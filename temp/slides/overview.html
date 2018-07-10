@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview &mdash; The Joy of Packaging 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="The Joy of Packaging 0.1 documentation" href="index.html" />
+    <link rel="next" title="Making a Python Package" href="setup_py.html" />
+    <link rel="prev" title="Tutorial Schedule" href="schedule.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="overview">
+
+<h1>Overview</h1>
+
+
+
+
+
+</article>
+<article class="slide level-2" id="packages">
+
+<h2>Packages</h2>
+
+
+
+
+
+</article>
+<article class="slide level-3" id="what-is-a-package">
+
+<h3>What is a “package”?</h3>
+
+<ul class="simple">
+<li>In a broad sense, anything you install using your package manager</li>
+<li>Some kinds of packages have implied behavior and requirements</li>
+<li>Unfortunate overloading: python “package”: a folder that python imports</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="package-managers-and-repos">
+
+<h3>Package Managers and Repos</h3>
+
+<ul class="simple">
+<li>Many package managers: some OS specific:<ul>
+<li>apt, yum, dnf, chocolatey, homebrew, etc.</li>
+</ul>
+</li>
+<li>Some language specific:<ul>
+<li>NPM, pip, RubyGems</li>
+</ul>
+</li>
+<li>And there are many online repositories of packages:<ul>
+<li>PyPI, anaconda.org, CRAN, CPAN</li>
+</ul>
+</li>
+</ul>
+<p>But they all contain:</p>
+<ul class="simple">
+<li>Some form of dependency management</li>
+<li>Artifact and/or source repository</li>
+</ul>
+<p>The idea is that you install something, and have it <em>just work</em>.</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="package-types">
+
+<h3>Package types:</h3>
+
+<p>A package can be essentially in two forms:</p>
+<ul class="simple">
+<li>source</li>
+<li>binary</li>
+</ul>
+
+
+
+
+</article>
+<article class="slide level-3" id="id2">
+
+<h3>Package types:</h3>
+
+<p>Focusing now on the Python world:</p>
+<p>As Python is a dynamic language, this distinction can get a bit blurred:</p>
+<p>There is little difference between a source and binary package <em>for a pure python package</em></p>
+<p>But if there is any compiled code in there, building from source can be a challenge:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Binary packages are very helpful</li>
+</ul>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="slide level-3" id="source-packages">
+
+<h3>Source Packages</h3>
+
+<p>A source package is all the source code required to build the package.</p>
+<p>Package managers (like pip) can automatically build your package from source.</p>
+<p><strong>But:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>Your system needs the correct tools installed, compilers, build tools, etc</li>
+<li>You need to have the dependencies available</li>
+<li>Sometimes it takes time, sometimes a LONG time</li>
+</ul>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="slide level-3" id="binary-packages">
+
+<h3>Binary Packages</h3>
+
+<p>A collection of code all ready to run.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Everything is already compiled and ready to go – makes it easy.</li>
+</ul>
+</div></blockquote>
+<p><strong>But:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>It’s likely to be platform dependent</li>
+<li>May require dependencies to be installed</li>
+</ul>
+</div></blockquote>
+<p>How do you manage that if the dependencies aren’t in the same language/system?</p>
+
+
+
+
+</article>
+<article class="slide level-3" id="python-packaging">
+
+<h3>Python Packaging</h3>
+
+<p>There are two package managers widely used for Python.</p>
+<p><strong>pip:</strong> The “official” solution.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Pulls packages from PyPI</li>
+<li>Handles both source and binary packages (wheels)</li>
+<li>Python only</li>
+</ul>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="slide level-3" id="id3">
+
+<h3>Python Packaging</h3>
+
+<p><strong>conda:</strong> Widely used in the scipy community.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Pulls packages from anaconda.org</li>
+<li>Binary only (does not compile code when installing)</li>
+<li>Supports other languages / libraries: C, Fortran, R, Perl, Java (anything, really)</li>
+<li>Manages Python itself!</li>
+</ul>
+</div></blockquote>
+
+
+
+
+</article>
+<article class="slide level-3" id="os-package-managers">
+
+<h3>OS package managers:</h3>
+
+<ul class="simple">
+<li>Linux: apt, conda, dnf, homebrew, nix, pacman, spack, yum</li>
+<li>OS-X: conda, homebrew, macports, spack</li>
+<li>Windows: chocolatey, conda, cygwin, pacman (msys2)</li>
+</ul>
+<p>Sometimes handle python packages – but we won’t talk about those here.</p>
+
+
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>
